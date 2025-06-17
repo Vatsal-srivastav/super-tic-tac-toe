@@ -1,7 +1,10 @@
+const menu = document.getElementById("menu");
+const gameContainer = document.getElementById("game-container");
 const game = document.getElementById("game");
 const statusText = document.getElementById("status");
 let currentPlayer = "X";
 let activeBoard = -1;
+let gameMode = "local"; 
 
 const boards = Array(9).fill(null).map(() => Array(9).fill(""));
 const boardWinners = Array(9).fill(null);
@@ -69,6 +72,60 @@ function makeMove(boardIndex, cellIndex) {
   currentPlayer = currentPlayer === "X" ? "O" : "X";
   statusText.textContent = `Player ${currentPlayer}'s turn`;
   renderGame();
+
+  if (gameMode === "bot" && currentPlayer === "O") {
+    setTimeout(botMove, 500);
+  }
 }
 
-renderGame();
+function botMove() {
+  let moveMade = false;
+  if (activeBoard === -1) {
+    for (let bi = 0; bi < 9 && !moveMade; bi++) {
+      if (!boardWinners[bi] && boards[bi].some(c => !c)) {
+        for (let ci = 0; ci < 9; ci++) {
+          if (!boards[bi][ci]) {
+            makeMove(bi, ci);
+            moveMade = true;
+            break;
+          }
+        }
+      }
+    }
+  } else {
+    for (let ci = 0; ci < 9; ci++) {
+      if (!boards[activeBoard][ci]) {
+        makeMove(activeBoard, ci);
+        break;
+      }
+    }
+  }
+}
+
+document.getElementById("play-vs-bot").onclick = () => {
+  gameMode = "bot";
+  menu.style.display = "none";
+  gameContainer.style.display = "block";
+  currentPlayer = "X";
+  activeBoard = -1;
+  for (let i = 0; i < 9; i++) {
+    boards[i] = Array(9).fill("");
+    boardWinners[i] = null;
+  }
+  statusText.textContent = `Player X's turn`;
+  renderGame();
+};
+
+document.getElementById("play-vs-human-local").onclick = () => {
+  gameMode = "local";
+  menu.style.display = "none";
+  gameContainer.style.display = "block";
+  currentPlayer = "X";
+  activeBoard = -1;
+  for (let i = 0; i < 9; i++) {
+    boards[i] = Array(9).fill("");
+    boardWinners[i] = null;
+  }
+  statusText.textContent = `Player X's turn`;
+  renderGame();
+};
