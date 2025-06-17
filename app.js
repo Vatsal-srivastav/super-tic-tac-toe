@@ -89,7 +89,7 @@ function minimax(boards, boardWinners, activeBoard, player, depth, maxDepth) {
 }
 
 function botMove() {
-  const { move } = minimax(boards, boardWinners, activeBoard, "O", 0, 4);
+  const { move } = minimax(boards, boardWinners, activeBoard, "O", 0, 9);
   if (move) makeMove(move.bi, move.ci);
 }
 
