@@ -106,27 +106,36 @@ function makeMove(boardIndex, cellIndex) {
 }
 
 function botMove() {
-  let moveMade = false;
+  if (!botNN) {
+    setTimeout(botMove, 100);
+    return;
+  }
+  let flatBoard = [];
+  for (let bi = 0; bi < 9; bi++) {
+    for (let ci = 0; ci < 9; ci++) {
+      if (boards[bi][ci] === "X") flatBoard.push(1);
+      else if (boards[bi][ci] === "O") flatBoard.push(-1);
+      else flatBoard.push(0);
+    }
+  }
+  let validMoves = [];
   if (activeBoard === -1) {
-    for (let bi = 0; bi < 9 && !moveMade; bi++) {
+    for (let bi = 0; bi < 9; bi++) {
       if (!boardWinners[bi] && boards[bi].some(c => !c)) {
         for (let ci = 0; ci < 9; ci++) {
-          if (!boards[bi][ci]) {
-            makeMove(bi, ci);
-            moveMade = true;
-            break;
-          }
+          if (!boards[bi][ci]) validMoves.push(bi * 9 + ci);
         }
       }
     }
   } else {
     for (let ci = 0; ci < 9; ci++) {
-      if (!boards[activeBoard][ci]) {
-        makeMove(activeBoard, ci);
-        break;
-      }
+      if (!boards[activeBoard][ci]) validMoves.push(activeBoard * 9 + ci);
     }
   }
+  let move = botNN.predict(flatBoard, validMoves);
+  let bi = Math.floor(move / 9);
+  let ci = move % 9;
+  makeMove(bi, ci);
 }
 
 document.getElementById("play-vs-bot").onclick = () => {
@@ -206,3 +215,11 @@ document.getElementById("reset").onclick = () => {
   menu.style.display = "block";
   gameContainer.style.display = "none";
 };
+
+let botNN = null;
+
+fetch('bot_weights.json')
+  .then(res => res.json())
+  .then(weights => {
+    botNN = new BotNN(weights);
+  });
