@@ -60,6 +60,15 @@ function restartGame() {
     statusDisplay.textContent = `It's ${currentPlayer}'s turn`;
 }
 
+
+const boardContainer = document.querySelector('.game-board');
+boardContainer.innerHTML = '';
+for (let i = 0; i < 9; i++) {
+    const cell = document.createElement('div');
+    cell.classList.add('cell');
+    boardContainer.appendChild(cell);
+}
+
 cells.forEach((cell, index) => {
     cell.addEventListener('click', () => handleCellClick(cell, index));
 });
