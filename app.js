@@ -52,6 +52,33 @@ function renderGame() {
 }
 
 function makeMove(boardIndex, cellIndex) {
+  if (gameMode === "online") {
+    if (!isMyTurn || boards[boardIndex][cellIndex]) return;
+    boards[boardIndex][cellIndex] = mySymbol;
+    const winner = checkWin(boards[boardIndex]);
+    if (winner) boardWinners[boardIndex] = winner;
+    const gameWinner = checkWin(boardWinners);
+    let nextActive = (!boardWinners[cellIndex] && boards[cellIndex].some(c => !c)) ? cellIndex : -1;
+    socket.emit('move', {
+      room,
+      boardIndex,
+      cellIndex,
+      symbol: mySymbol,
+      winner,
+      nextActiveBoard: nextActive
+    });
+    activeBoard = nextActive;
+    currentPlayer = mySymbol === "X" ? "O" : "X";
+    isMyTurn = false;
+    if (gameWinner) {
+      statusText.textContent = `You ${gameWinner === mySymbol ? "win!" : "lose!"}`;
+      restartBtn.style.display = "block";
+    } else {
+      statusText.textContent = "Opponent's turn";
+    }
+    renderGame();
+    return;
+  }
   if (boards[boardIndex][cellIndex]) return;
   boards[boardIndex][cellIndex] = currentPlayer;
   const winner = checkWin(boards[boardIndex]);
@@ -134,3 +161,40 @@ document.getElementById("reset").onclick = () => {
   menu.style.display = "block";
   gameContainer.style.display = "none";
 };
+
+// server.js
+const http = require('http');
+const express = require('express');
+const socketIo = require('socket.io');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, { cors: { origin: "*" } });
+
+let waitingPlayer = null;
+
+io.on('connection', (socket) => {
+  if (waitingPlayer) {
+    const room = `room-${waitingPlayer.id}-${socket.id}`;
+    socket.join(room);
+    waitingPlayer.join(room);
+    io.to(room).emit('start', { room, symbol: 'O' });
+    waitingPlayer.emit('start', { room, symbol: 'X' });
+    waitingPlayer = null;
+  } else {
+    waitingPlayer = socket;
+    socket.emit('waiting');
+  }
+
+  socket.on('move', (data) => {
+    socket.to(data.room).emit('move', data);
+  });
+
+  socket.on('disconnect', () => {
+    if (waitingPlayer === socket) waitingPlayer = null;
+  });
+});
+
+server.listen(3000, () => console.log('Server running on port 3000'));
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
