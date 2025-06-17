@@ -129,3 +129,8 @@ document.getElementById("play-vs-human-local").onclick = () => {
   statusText.textContent = `Player X's turn`;
   renderGame();
 };
+
+document.getElementById("reset").onclick = () => {
+  menu.style.display = "block";
+  gameContainer.style.display = "none";
+};
