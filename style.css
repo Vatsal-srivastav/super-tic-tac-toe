@@ -59,3 +59,7 @@ h1 {
 .reset-button:hover {
     background-color: #45a049;
 }
+
+.clicked {
+    pointer-events: none;
+}
