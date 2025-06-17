@@ -197,4 +197,4 @@ io.on('connection', (socket) => {
 
 server.listen(3000, () => console.log('Server running on port 3000'));
 
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="app.js"></script>
