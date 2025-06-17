@@ -212,7 +212,7 @@ function getValidMoves(boards, boardWinners, activeBoard) {
   return moves;
 }
 
-function minimax(boards, boardWinners, activeBoard, player, depth, maxDepth) {
+function bot(boards, boardWinners, activeBoard, player, depth, maxDepth) {
   const winner = checkWin(boardWinners);
   if (winner === "X") return {score: 10 - depth};
   if (winner === "O") return {score: depth - 10};
