@@ -8,8 +8,16 @@
 </head>
 <body>
   <h1>Super Tic Tac Toe</h1>
-  <div id="game"></div>
-  <p id="status">Player X's turn</p>
+  <div id="menu">
+    <h2>Choose Play Option</h2>
+    <button id="play-vs-bot">Player vs Bot</button>
+    <button id="play-vs-human-online" disabled>Player vs Human (Multiplayer, Coming Soon)</button>
+    <button id="play-vs-human-local">Player vs Human (In Person)</button>
+  </div>
+  <div id="game-container" style="display:none;">
+    <div id="game"></div>
+    <p id="status">Player X's turn</p>
+  </div>
   <script src="app.js"></script>
 </body>
 </html>
