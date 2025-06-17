@@ -106,7 +106,7 @@ function makeMove(boardIndex, cellIndex) {
 }
 
 function botMove() {
-  let {move} = bot(boards, boardWinners, activeBoard, "O", 0, 25);
+  let {move} = botMinimax(boards, boardWinners, activeBoard, "O", 0, 3);
   if (move) {
     makeMove(move.bi, move.ci);
   }
