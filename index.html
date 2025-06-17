@@ -1,23 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Super Tic Tac Toe</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Super Tic Tac Toe</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-    <div class="game-container">
-        <h1>Super Tic Tac Toe</h1>
-        <div class="game-status"></div>
-        <div class="game-board">
-            <!-- board -->
-        </div>
-        <button id="reset">Reset Game</button>
-    </div>
-    <script src="app.js"></script>
-    <script>
-        document.getElementById('reset').addEventListener('click', restartGame);
-    </script>
+  <h1>Super Tic Tac Toe</h1>
+  <div id="game"></div>
+  <p id="status">Player X's turn</p>
+  <script src="script.js"></script>
 </body>
 </html>
