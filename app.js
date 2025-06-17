@@ -72,7 +72,7 @@ function makeMove(boardIndex, cellIndex) {
     isMyTurn = false;
     if (gameWinner) {
       statusText.textContent = `You ${gameWinner === mySymbol ? "win!" : "lose!"}`;
-      restartBtn.style.display = "block";
+      document.getElementById("reset").style.display = "block";
     } else {
       statusText.textContent = "Opponent's turn";
     }
@@ -155,6 +155,51 @@ document.getElementById("play-vs-human-local").onclick = () => {
   }
   statusText.textContent = `Player X's turn`;
   renderGame();
+};
+
+document.getElementById("play-vs-human-online").onclick = () => {
+  gameMode = "online";
+  menu.style.display = "none";
+  gameContainer.style.display = "block";
+  statusText.textContent = "Connecting to server...";
+  document.getElementById("reset").style.display = "none";
+  for (let i = 0; i < 9; i++) {
+    boards[i] = Array(9).fill("");
+    boardWinners[i] = null;
+  }
+  currentPlayer = "X";
+  activeBoard = -1;
+  renderGame();
+
+  socket = io("http://localhost:3000");
+
+  socket.on('waiting', () => {
+    statusText.textContent = "Waiting for another player...";
+  });
+
+  socket.on('start', (data) => {
+    room = data.room;
+    mySymbol = data.symbol;
+    isMyTurn = (mySymbol === "X");
+    statusText.textContent = isMyTurn ? "Your turn (You are X)" : "Opponent's turn (You are O)";
+    renderGame();
+  });
+
+  socket.on('move', (data) => {
+    boards[data.boardIndex][data.cellIndex] = data.symbol;
+    if (data.winner) boardWinners[data.boardIndex] = data.symbol;
+    activeBoard = data.nextActiveBoard;
+    currentPlayer = data.symbol === "X" ? "O" : "X";
+    isMyTurn = true;
+    const gameWinner = checkWin(boardWinners);
+    if (gameWinner) {
+      statusText.textContent = `You ${gameWinner === mySymbol ? "win!" : "lose!"}`;
+      document.getElementById("reset").style.display = "block";
+    } else {
+      statusText.textContent = "Your turn";
+    }
+    renderGame();
+  });
 };
 
 document.getElementById("reset").onclick = () => {
