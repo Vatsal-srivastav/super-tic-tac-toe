@@ -106,36 +106,10 @@ function makeMove(boardIndex, cellIndex) {
 }
 
 function botMove() {
-  if (!botNN) {
-    setTimeout(botMove, 100);
-    return;
+  let {move} = minimax(boards, boardWinners, activeBoard, "O", 0, 3);
+  if (move) {
+    makeMove(move.bi, move.ci);
   }
-  let flatBoard = [];
-  for (let bi = 0; bi < 9; bi++) {
-    for (let ci = 0; ci < 9; ci++) {
-      if (boards[bi][ci] === "X") flatBoard.push(1);
-      else if (boards[bi][ci] === "O") flatBoard.push(-1);
-      else flatBoard.push(0);
-    }
-  }
-  let validMoves = [];
-  if (activeBoard === -1) {
-    for (let bi = 0; bi < 9; bi++) {
-      if (!boardWinners[bi] && boards[bi].some(c => !c)) {
-        for (let ci = 0; ci < 9; ci++) {
-          if (!boards[bi][ci]) validMoves.push(bi * 9 + ci);
-        }
-      }
-    }
-  } else {
-    for (let ci = 0; ci < 9; ci++) {
-      if (!boards[activeBoard][ci]) validMoves.push(activeBoard * 9 + ci);
-    }
-  }
-  let move = botNN.predict(flatBoard, validMoves);
-  let bi = Math.floor(move / 9);
-  let ci = move % 9;
-  makeMove(bi, ci);
 }
 
 document.getElementById("play-vs-bot").onclick = () => {
@@ -223,3 +197,60 @@ fetch('bot_weights.json')
   .then(weights => {
     botNN = new BotNN(weights);
   });
+
+function getValidMoves(boards, boardWinners, activeBoard) {
+  let moves = [];
+  if (activeBoard === -1) {
+    for (let bi = 0; bi < 9; bi++) {
+      if (!boardWinners[bi] && boards[bi].some(c => !c)) {
+        for (let ci = 0; ci < 9; ci++) {
+          if (!boards[bi][ci]) moves.push({bi, ci});
+        }
+      }
+    }
+  } else {
+    if (!boardWinners[activeBoard] && boards[activeBoard].some(c => !c)) {
+      for (let ci = 0; ci < 9; ci++) {
+        if (!boards[activeBoard][ci]) moves.push({bi: activeBoard, ci});
+      }
+    }
+  }
+  return moves;
+}
+
+function minimax(boards, boardWinners, activeBoard, player, depth, maxDepth) {
+  const winner = checkWin(boardWinners);
+  if (winner === "X") return {score: 10 - depth};
+  if (winner === "O") return {score: depth - 10};
+  if (getValidMoves(boards, boardWinners, activeBoard).length === 0 || depth >= maxDepth) return {score: 0};
+
+  let bestMove = null;
+  let bestScore = (player === "O") ? Infinity : -Infinity;
+  let moves = getValidMoves(boards, boardWinners, activeBoard);
+
+  for (let move of moves) {
+    boards[move.bi][move.ci] = player;
+    let prevWinner = boardWinners[move.bi];
+    let localWinner = checkWin(boards[move.bi]);
+    if (localWinner) boardWinners[move.bi] = localWinner;
+
+    let nextActive = (!boardWinners[move.ci] && boards[move.ci].some(c => !c)) ? move.ci : -1;
+    let result = minimax(boards, boardWinners, nextActive, player === "X" ? "O" : "X", depth + 1, maxDepth);
+
+    boards[move.bi][move.ci] = "";
+    boardWinners[move.bi] = prevWinner;
+
+    if (player === "O") {
+      if (result.score < bestScore) {
+        bestScore = result.score;
+        bestMove = move;
+      }
+    } else {
+      if (result.score > bestScore) {
+        bestScore = result.score;
+        bestMove = move;
+      }
+    }
+  }
+  return {score: bestScore, move: bestMove};
+}
