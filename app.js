@@ -106,7 +106,7 @@ function makeMove(boardIndex, cellIndex) {
 }
 
 function botMove() {
-  let {move} = minimax(boards, boardWinners, activeBoard, "O", 0, 10);
+  let {move} = minimax(boards, boardWinners, activeBoard, "O", 0, 3);
   if (move) {
     makeMove(move.bi, move.ci);
   }
@@ -191,12 +191,6 @@ document.getElementById("reset").onclick = () => {
 };
 
 let botNN = null;
-
-fetch('bot_weights.json')
-  .then(res => res.json())
-  .then(weights => {
-    botNN = new BotNN(weights);
-  });
 
 function getValidMoves(boards, boardWinners, activeBoard) {
   let moves = [];
