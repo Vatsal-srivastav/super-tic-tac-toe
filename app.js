@@ -32,7 +32,14 @@ function renderGame() {
         cellDiv.classList.add(`won-${boardWinners[bi]}`);
       }
       cellDiv.textContent = cell;
-      if (!cell && (!boardWinners[bi]) && (activeBoard === -1 || activeBoard === bi)) {
+      if (
+        !cell &&
+        !boardWinners[bi] &&
+        (
+          (activeBoard === -1 && boards[bi].some(c => !c)) ||
+          activeBoard === bi
+        )
+      ) {
         cellDiv.onclick = () => makeMove(bi, ci);
       }
       boardDiv.appendChild(cellDiv);
@@ -54,8 +61,12 @@ function makeMove(boardIndex, cellIndex) {
     renderGame();
     return;
   }
+  if (!boardWinners[cellIndex] && boards[cellIndex].some(c => !c)) {
+    activeBoard = cellIndex;
+  } else {
+    activeBoard = -1;
+  }
   currentPlayer = currentPlayer === "X" ? "O" : "X";
-  activeBoard = boardWinners[cellIndex] || boards[cellIndex].some(c => !c) ? cellIndex : -1;
   statusText.textContent = `Player ${currentPlayer}'s turn`;
   renderGame();
 }
