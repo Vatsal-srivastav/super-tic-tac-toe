@@ -1,3 +1,96 @@
+
+body {
+  font-family: Arial, sans-serif;
+  text-align: center;
+  background: #f5f5f5;
+}
+
+#game {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 10px;
+  justify-content: center;
+  margin: 20px;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(3, 40px);
+  grid-template-rows: repeat(3, 40px);
+  border: 2px solid #333;
+  background: white;
+}
+
+.cell {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  border: 1px solid #aaa;
+  cursor: pointer;
+}
+
+.cell.won-X {
+  background-color: #d1e7dd;
+}
+
+.cell.won-O {
+  background-color: #f8d7da;
+}
+
+#menu {
+  margin: 40px auto 20px auto;
+  padding: 24px 0;
+  background: #fff;
+  border-radius: 10px;
+  width: 320px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+#menu h2 {
+  margin-bottom: 18px;
+}
+
+#menu button {
+  display: block;
+  width: 90%;
+  margin: 10px auto;
+  padding: 10px 0;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid #333;
+  background: #e9ecef;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+#menu button:disabled {
+  background: #f5f5f5;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+#menu button:not(:disabled):hover {
+  background: #d1e7dd;
+}
+
+#game-container {
+  margin: 0 auto;
+  width: fit-content;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+  padding: 24px 0 12px 0;
+}
+
+#status {
+  font-size: 1.1rem;
+  margin-top: 18px;
+  margin-bottom: 0;
+  color: #333;
+}
 body {
   min-height: 100vh;
   display: flex;
