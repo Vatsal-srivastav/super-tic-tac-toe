@@ -3,9 +3,9 @@ let currentPlayer = 'X';
 let gameActive = true;
 
 const statusDisplay = document.querySelector('.game-status');
-const cells = document.querySelectorAll('.cell');
 
 function handleCellClick(clickedCell, clickedCellIndex) {
+    console.log('Cell clicked:', clickedCellIndex); 
     if (board[clickedCellIndex] || !gameActive) {
         return;
     }
@@ -60,7 +60,6 @@ function restartGame() {
     statusDisplay.textContent = `It's ${currentPlayer}'s turn`;
 }
 
-
 const boardContainer = document.querySelector('.game-board');
 boardContainer.innerHTML = '';
 for (let i = 0; i < 9; i++) {
@@ -69,10 +68,11 @@ for (let i = 0; i < 9; i++) {
     boardContainer.appendChild(cell);
 }
 
+const cells = document.querySelectorAll('.cell');
 cells.forEach((cell, index) => {
     cell.addEventListener('click', () => handleCellClick(cell, index));
 });
 
-document.querySelector('.restart-button').addEventListener('click', restartGame);
+document.getElementById('reset').addEventListener('click', restartGame);
 
 statusDisplay.textContent = `It's ${currentPlayer}'s turn`;
