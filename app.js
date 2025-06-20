@@ -1,5 +1,3 @@
-// Super Tic Tac Toe with Minimax Bot
-
 const menu = document.getElementById("menu");
 const gameContainer = document.getElementById("game-container");
 const game = document.getElementById("game");
@@ -47,16 +45,34 @@ function getValidMoves(boards, boardWinners, activeBoard) {
   return moves;
 }
 
-function minimax(boards, boardWinners, activeBoard, player, depth, maxDepth) {
+function evaluateBoard(boards, boardWinners) {
+  // Heuristic scoring function to evaluate board state
+  let score = 0;
+  for (let bi = 0; bi < 9; bi++) {
+    const b = boards[bi];
+    const w = boardWinners[bi];
+    if (w === "X") score += 10;
+    else if (w === "O") score -= 10;
+    else {
+      const center = b[4];
+      if (center === "X") score += 1;
+      else if (center === "O") score -= 1;
+    }
+  }
+  return score;
+}
+
+function minimax(boards, boardWinners, activeBoard, player, depth, maxDepth, alpha, beta) {
   const winner = checkWin(boardWinners);
-  if (winner === "X") return { score: 10 - depth };
-  if (winner === "O") return { score: depth - 10 };
+  if (winner === "X") return { score: 1000 - depth };
+  if (winner === "O") return { score: depth - 1000 };
 
   const validMoves = getValidMoves(boards, boardWinners, activeBoard);
-  if (validMoves.length === 0 || depth >= maxDepth) return { score: 0 };
+  if (validMoves.length === 0 || depth >= maxDepth) {
+    return { score: evaluateBoard(boards, boardWinners) };
+  }
 
   let bestMove = null;
-  let bestScore = player === "O" ? Infinity : -Infinity;
 
   for (let move of validMoves) {
     const prevCell = boards[move.bi][move.ci];
@@ -67,29 +83,40 @@ function minimax(boards, boardWinners, activeBoard, player, depth, maxDepth) {
     if (localWinner) boardWinners[move.bi] = localWinner;
 
     const nextActive = (!boardWinners[move.ci] && boards[move.ci].some(c => !c)) ? move.ci : -1;
-    const result = minimax(boards, boardWinners, nextActive, player === "X" ? "O" : "X", depth + 1, maxDepth);
+    const result = minimax(
+      boards,
+      boardWinners,
+      nextActive,
+      player === "X" ? "O" : "X",
+      depth + 1,
+      maxDepth,
+      alpha,
+      beta
+    );
 
     boards[move.bi][move.ci] = prevCell;
     boardWinners[move.bi] = prevWinner;
 
     if (player === "O") {
-      if (result.score < bestScore) {
-        bestScore = result.score;
+      if (result.score < beta) {
+        beta = result.score;
         bestMove = move;
       }
     } else {
-      if (result.score > bestScore) {
-        bestScore = result.score;
+      if (result.score > alpha) {
+        alpha = result.score;
         bestMove = move;
       }
     }
+
+    if (alpha >= beta) break;
   }
 
-  return { score: bestScore, move: bestMove };
+  return { score: player === "O" ? beta : alpha, move: bestMove };
 }
 
 function botMove() {
-  const { move } = minimax(boards, boardWinners, activeBoard, "O", 0, 4);
+  const { move } = minimax(boards, boardWinners, activeBoard, "O", 0, 6, -Infinity, Infinity);
   if (move) makeMove(move.bi, move.ci);
 }
 
