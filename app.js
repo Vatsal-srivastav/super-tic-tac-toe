@@ -148,21 +148,38 @@ function renderGame() {
   boards.forEach((board, bi) => {
     const boardDiv = document.createElement("div");
     boardDiv.classList.add("board");
+
+    // ➤ ADD THIS: highlight the active board
+    if (activeBoard === -1) {
+      // All boards open → highlight all un-won boards
+      if (!boardWinners[bi]) {
+        boardDiv.classList.add("active-board");
+      }
+    } else if (activeBoard === bi) {
+      boardDiv.classList.add("active-board");
+    }
+
     board.forEach((cell, ci) => {
       const cellDiv = document.createElement("div");
       cellDiv.classList.add("cell");
+
       if (boardWinners[bi]) {
         cellDiv.classList.add(`won-${boardWinners[bi]}`);
       }
+
       cellDiv.textContent = cell;
+
       if (!cell && !boardWinners[bi] && (activeBoard === -1 || activeBoard === bi)) {
         cellDiv.onclick = () => makeMove(bi, ci);
       }
+
       boardDiv.appendChild(cellDiv);
     });
+
     game.appendChild(boardDiv);
   });
 }
+
 
 function resetGame(mode) {
   gameMode = mode;
