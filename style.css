@@ -22,9 +22,10 @@ body {
 }
 
 .board.active-board {
-  outline: 4px solid #4caf50; /* green border */
-  box-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
-  border-radius: 6px;
+  box-shadow: 0 0 20px rgba(0, 180, 255, 0.6);
+  border-radius: 10px;
+  transform: scale(1.02);
+  transition: 0.25s ease;
 }
 
 .cell {
