@@ -21,6 +21,12 @@ body {
   background: white;
 }
 
+.board.active-board {
+  outline: 4px solid #4caf50; /* green border */
+  box-shadow: 0 0 15px rgba(76, 175, 80, 0.8);
+  border-radius: 6px;
+}
+
 .cell {
   width: 40px;
   height: 40px;
